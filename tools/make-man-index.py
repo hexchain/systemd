@@ -48,6 +48,7 @@ def check_id(page, t):
     if not re.search('/' + id + '[.]', page):
         raise ValueError("id='{}' is not the same as page name '{}'".format(id, page))
 
+
 def make_index(pages):
     index = collections.defaultdict(list)
     for p in pages:
@@ -88,9 +89,10 @@ def add_letter(template, letter, pages):
         d = tree.SubElement(b, 'manvolnum')
         d.text = section
 
-        b.tail = MDASH + purpose # + ' (' + p + ')'
+        b.tail = MDASH + purpose  # + ' (' + p + ')'
 
         tree.SubElement(para, 'sbr')
+
 
 def add_summary(template, indexpages):
     count = 0
@@ -107,6 +109,7 @@ def add_summary(template, indexpages):
     para = template.find(".//para[@id='counts']")
     para.text = COUNTS.format(count=count, pages=len(pages))
 
+
 def make_page(*xml_files):
     template = tree.fromstring(TEMPLATE)
     index = make_index(xml_files)
@@ -117,6 +120,7 @@ def make_page(*xml_files):
     add_summary(template, index.values())
 
     return template
+
 
 if __name__ == '__main__':
     with open(sys.argv[1], 'wb') as f:
