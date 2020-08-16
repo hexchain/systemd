@@ -58,16 +58,28 @@ def make_index(pages):
         purpose_text = ' '.join(t.find('./refnamediv/refpurpose').itertext())
         purpose = ' '.join(purpose_text.split())
         for f in t.findall('./refnamediv/refname'):
+            if f.text.startswith('systemd-'):
+                letter = f.text[8]
+            else:
+                letter = f.text[0]
             infos = (f.text, section, purpose, refname)
-            index[f.text[0].upper()].append(infos)
+            index[letter.upper()].append(infos)
     return index
+
+
+def sort_key(info):
+    if info[0].startswith('systemd-'):
+        return 'zzzz-' + str.lower(info[0][8:])
+    else:
+        return str.lower(info[0])
+
 
 def add_letter(template, letter, pages):
     refsect1 = tree.SubElement(template, 'refsect1')
     title = tree.SubElement(refsect1, 'title')
     title.text = letter
     para = tree.SubElement(refsect1, 'para')
-    for info in sorted(pages, key=lambda info: str.lower(info[0])):
+    for info in sorted(pages, key=sort_key):
         refname, section, purpose, realname = info
 
         b = tree.SubElement(para, 'citerefentry')
